@@ -1,5 +1,5 @@
 substitutions:
-  _IMAGE: "us-central1-docker.pkg.dev/bamboo-case-478719-s3/search-jobs:latest"
+  _IMAGE: "us-central1-docker.pkg.dev/bamboo-case-478719-s3/search-jobs/search-jobs:latest"
 
 options:
   logging: CLOUD_LOGGING_ONLY
