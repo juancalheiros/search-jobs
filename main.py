@@ -1,9 +1,15 @@
 import requests
 import os
+import logging
 
 from json import dump as json_dump
 from dotenv import load_dotenv
 
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
 
 load_dotenv()
 
@@ -26,8 +32,10 @@ def search_job():
         if not headers.get("x-rapidapi-key"):
             raise Exception("🚨 Please add your API_KEY_RAPID in .env")
 
+        logging.info("Initiating job search request...")
         response  = requests.get(url, headers=headers, params=query)
         data  = response.json()
+        logging.info("Request sucess. Processing data...")
 
         result = []
 
@@ -47,10 +55,11 @@ def search_job():
         with open("vagas.json", "w", encoding="utf-8") as f:
             json_dump(result, f, indent=4, ensure_ascii=False)
 
+        logging.info(f"Finish process, total: {len(result)},  salving in 'vagas.json'.")
         return result
 
     except Exception as e:
-        print(f"Erro ao buscar vagas: {e}")
+        logging.error(f"An error occurred: {e}")
         return []
 
 if __name__ == "__main__":
