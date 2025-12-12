@@ -1,0 +1,39 @@
+substitutions:
+  _IMAGE: "us-central1-docker.pkg.dev/bamboo-case-478719-s3/search-jobs:latest"
+
+steps:
+  # 1. Build da imagem
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "build",
+        "-t",
+        "${_IMAGE}",
+        ".",
+      ]
+
+  # 2. Push para Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      [
+        "push",
+        "${_IMAGE}",
+      ]
+
+  # 3. Update do Cloud Run Job
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      [
+        "run",
+        "jobs",
+        "update",
+        "search-jobs",
+        "--image",
+        "${_IMAGE}",
+        "--region",
+        "us-central1",
+      ]
+
+images:
+  - "${_IMAGE}"
