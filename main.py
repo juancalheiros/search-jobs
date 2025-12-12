@@ -23,6 +23,9 @@ query = {
 
 def search_job():
     try: 
+        if not headers.get("x-rapidapi-key"):
+            raise Exception("🚨 Please add your API_KEY_RAPID in .env")
+
         response  = requests.get(url, headers=headers, params=query)
         data  = response.json()
 
