@@ -10,7 +10,7 @@ load_dotenv()
 url = os.getenv("URL_SEARCH_JOBS", "https://jsearch.p.rapidapi.com/search")
 headers = { 
     "x-rapidapi-key" : os.getenv("API_KEY_RAPID"),
-    "x-rapidapi-host": os.getenv("RAPID_API_HOST", "https://jsearch.p.rapidapi.com/search"),
+    "x-rapidapi-host": os.getenv("RAPID_API_HOST", "jsearch.p.rapidapi.com"),
 }
 query = {
     "query": os.getenv("QUERY_SEARCH", "desenvolvedor fullstack"),
