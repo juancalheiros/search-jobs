@@ -2,11 +2,13 @@ import requests
 import os
 import logging
 
-from json import dump as json_dump
+from json import dump as json_dump, dumps as json_dumps
+from google.cloud import pubsub_v1
 from dotenv import load_dotenv
 
+
 logging.basicConfig(
-    level=logging.INFO,
+    level=os.getenv("LOG_LEVEL", logging.INFO),
     format="%(asctime)s - %(levelname)s - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S"
 )
@@ -26,6 +28,20 @@ query = {
     "work_from_home": os.getenv("REMOTE_JOB", "false"),
 }
 
+PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+TOPIC_ID = os.getenv("PUBSUB_TOPIC_ID")
+
+def send_message_to_pubsub(data: str):
+
+    publisher = pubsub_v1.PublisherClient()
+    topic_path = publisher.topic_path(PROJECT_ID, TOPIC_ID)
+
+    logging.info(f"Publishing message to {topic_path}...")
+
+    future = publisher.publish(topic_path, data)
+    future.result()
+
+    logging.info(f"Published messages to {topic_path}.")
 
 def search_job():
     try: 
@@ -55,7 +71,11 @@ def search_job():
         with open("vagas.json", "w", encoding="utf-8") as f:
             json_dump(result, f, indent=4, ensure_ascii=False)
 
-        logging.info(f"Finish process, total: {len(result)},  salving in 'vagas.json'.")
+        logging.info(f"Finish process, total: {len(result)} jobs found.")
+        logging.debug(f"Result data: {result}")
+
+        send_message_to_pubsub(data=json_dumps(result).encode("utf-8"))
+
         return result
 
     except Exception as e:
