@@ -21,7 +21,6 @@ headers = {
     "x-rapidapi-host": os.getenv("RAPID_API_HOST", "jsearch.p.rapidapi.com"),
 }
 query = {
-    "query": os.getenv("QUERY_SEARCH", "desenvolvedor fullstack"),
     "num_pages": int(os.getenv("NUM_PAGES", 3)),
     "country": os.getenv("COUNTRY", "br"),
     "data_posted":os.getenv("DATA_POSTED", "all"),
@@ -47,34 +46,38 @@ def search_job():
     try: 
         if not headers.get("x-rapidapi-key"):
             raise Exception("🚨 Please add your API_KEY_RAPID in .env")
-
-        logging.info("Initiating job search request...")
-        response  = requests.get(url, headers=headers, params=query)
-        data  = response.json()
-        logging.info("Request sucess. Processing data...")
-
+        
+        terms_search = os.getenv("QUERY_SEARCH", "desenvolvedor fullstack").split(",")
         result = []
 
-        for job_data in data.get("data"):
-            result.append({
-                "job_id": job_data.get("job_id"),
-                "job_title": job_data.get("job_title"),
-                "company": job_data.get("employer_name"), 
-                "job_apply_link": job_data.get("job_apply_link"),
-                "description": job_data.get("job_description"),
-                "job_is_remote": job_data.get("job_is_remote"),
-                "job_location": job_data.get("job_location"),
-                "job_google_link": job_data.get("job_google_link"),
-                "apply_options": job_data.get("apply_options"),
-            })
+        for job_search in terms_search:
+            query["query"] = job_search
 
-        with open("vagas.json", "w", encoding="utf-8") as f:
-            json_dump(result, f, indent=4, ensure_ascii=False)
+            logging.info(f"Initiating job search request... {job_search}")
+            response  = requests.get(url, headers=headers, params=query)
+            data  = response.json()
+            logging.info("Request sucess. Processing data...")
 
-        logging.info(f"Finish process, total: {len(result)} jobs found.")
-        logging.debug(f"Result data: {result}")
+            for job_data in data.get("data"):
+                result.append({
+                    "job_id": job_data.get("job_id"),
+                    "job_title": job_data.get("job_title"),
+                    "company": job_data.get("employer_name"), 
+                    "job_apply_link": job_data.get("job_apply_link"),
+                    "description": job_data.get("job_description"),
+                    "job_is_remote": job_data.get("job_is_remote"),
+                    "job_location": job_data.get("job_location"),
+                    "job_google_link": job_data.get("job_google_link"),
+                    "apply_options": job_data.get("apply_options"),
+                })
 
-        send_message_to_pubsub(data=json_dumps(result).encode("utf-8"))
+            with open("vagas.json", "w", encoding="utf-8") as f:
+                json_dump(result, f, indent=4, ensure_ascii=False)
+
+            logging.info(f"Finish process, total: {len(result)} jobs found.")
+            logging.debug(f"Result data: {result}")
+
+            send_message_to_pubsub(data=json_dumps(result).encode("utf-8"))
 
         return result
 
