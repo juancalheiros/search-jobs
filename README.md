@@ -6,7 +6,6 @@ Este é um projeto Python para buscar vagas de emprego utilizando a API do Rapid
 
 - Busca de vagas de emprego com base em palavras-chave.
 - Suporte para filtros como país, tipo de trabalho (remoto ou presencial) e data de postagem.
-- Salva os resultados em um arquivo JSON (`vagas.json`).
 - Envia os resultados para o Google Cloud Pub/Sub.
 - Suporte para execução com Docker e implantação com Google Cloud Build.
 
