@@ -76,7 +76,10 @@ Este é um projeto Python para buscar vagas de emprego utilizando a API do Rapid
 - `Makefile`: Comandos úteis para automação.
 - `.env`: Arquivo para configuração de variáveis de ambiente.
 - `cloudbuild.yaml`: Configuração para build e implantação no Google Cloud Run.
+- `assets`: Pasta com o desenho de arquitetura do projeto
 
+## Arquitetura
+![Arquitetura do Projeto](assets/arquitetura.png)
 
 ## Contribuição
 
