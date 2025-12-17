@@ -7,12 +7,15 @@ Este é um projeto Python para buscar vagas de emprego utilizando a API do Rapid
 - Busca de vagas de emprego com base em palavras-chave.
 - Suporte para filtros como país, tipo de trabalho (remoto ou presencial) e data de postagem.
 - Salva os resultados em um arquivo JSON (`vagas.json`).
+- Envia os resultados para o Google Cloud Pub/Sub.
+- Suporte para execução com Docker e implantação com Google Cloud Build.
 
 ## Requisitos
 
 - Python 3.14 ou superior
 - Biblioteca `requests`
 - Biblioteca `python-dotenv`
+- Google Cloud SDK configurado para Pub/Sub
 
 ## Instalação
 
@@ -27,11 +30,22 @@ Este é um projeto Python para buscar vagas de emprego utilizando a API do Rapid
    URL_SEARCH_JOBS=https://jsearch.p.rapidapi.com/search
    API_KEY_RAPID=seu_api_key
    RAPID_API_HOST=jsearch.p.rapidapi.com
-   QUERY_SEARCH=desenvolvedor fullstack
    NUM_PAGES=3
    COUNTRY=br
    DATA_POSTED=all
    REMOTE_JOB=false
+   GCP_PROJECT_ID=seu_projeto_gcp
+   PUBSUB_TOPIC_ID=seu_topico_pubsub
+   SEARCH_TARGETS=[
+       {
+           "email": "email1@example.com",
+           "keywords": "desenvolvedor backend, desenvolvedor de IA"
+       },
+       {
+           "email": "email2@example.com",
+           "keywords": "professor de fisica, professor de matematica"
+       }
+   ]
    ```
 
 ## Uso
@@ -40,9 +54,9 @@ Este é um projeto Python para buscar vagas de emprego utilizando a API do Rapid
    ```bash
    python main.py
    ```
-2. O resultado será salvo no arquivo `vagas.json`.
+2. O resultado será enviado ao Pub/Sub.
 
-3. O projeto pode ser rodado com o docker fazendo o build da imagem e rodando o container com esses comando no makefile
+3. O projeto pode ser rodado com o Docker fazendo o build da imagem e rodando o container com esses comandos no Makefile:
     ```bash
    make build
    ```
@@ -50,33 +64,20 @@ Este é um projeto Python para buscar vagas de emprego utilizando a API do Rapid
    make run
    ```
 
+4. Para implantar o projeto no Google Cloud Run usando o Cloud Build, utilize o arquivo `cloudbuild.yaml`:
+    ```bash
+    gcloud builds submit --config cloudbuild.yaml
+    ```
+
 ## Estrutura do Projeto
 
-- `main.py`: Script principal para buscar vagas.
+- `main.py`: Script principal para buscar vagas e enviar ao Pub/Sub.
 - `requirements.txt`: Lista de dependências do projeto.
 - `README.md`: Documentação do projeto.
-- `Makefile`: Comandos úteis para automação (opcional).
+- `Makefile`: Comandos úteis para automação.
 - `.env`: Arquivo para configuração de variáveis de ambiente.
+- `cloudbuild.yaml`: Configuração para build e implantação no Google Cloud Run.
 
-## Exemplo de Saída
-
-O arquivo `vagas.json` conterá uma lista de vagas no seguinte formato:
-
-```json
-[
-    {
-        "job_id": "12345",
-        "job_title": "Desenvolvedor Fullstack",
-        "company": "Empresa XYZ",
-        "job_apply_link": "https://example.com/apply",
-        "description": "Descrição da vaga...",
-        "job_is_remote": true,
-        "job_location": "São Paulo, SP",
-        "job_google_link": "https://example.com",
-        "apply_options": ["Opção 1", "Opção 2"]
-    }
-]
-```
 
 ## Contribuição
 
@@ -88,5 +89,5 @@ Este projeto está licenciado sob a licença MIT. Consulte o arquivo `LICENSE` p
 
 ## Contato
 
-- Autor: Juan de carvalho
+- Autor: Juan de Carvalho
 - Email: [juancalheiros0001@gmail.com](mailto:juancalheiros0001@gmail.com)

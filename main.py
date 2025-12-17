@@ -91,9 +91,6 @@ def search_job():
 
             result.append({"email": email, "searches": partial_result})
 
-            with open("vagas.json", "w", encoding="utf-8") as f:
-                json_dump(result, f, indent=4, ensure_ascii=False)
-
             logging.info(f"Finish process. Found {len(jobs)} jobs for {keywords}")
             logging.debug(f"Result data: {result}")
 
